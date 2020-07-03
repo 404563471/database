@@ -1,0 +1,20 @@
+#php-apache
+phptest:
+  image: php:5.6-apache-peibo
+  ports:
+   - 8010:80
+  volumes:
+   - ./bcancer:/var/www/html
+  links:
+   - db:bcancerdb
+
+db:
+  image: db:2.0
+  volumes:
+   - ./backupbcdb.sql:/docker-entrypoint-initdb.d/backupbcdb.sql
+  environment:
+   - MYSQL_ROOT_PASSWORD=*** 
+   - MYSQL_DATABASE=bcdb 
+
+
+
