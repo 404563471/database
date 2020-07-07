@@ -1,0 +1,3 @@
+example:
+./pipeline.sh example out1
+

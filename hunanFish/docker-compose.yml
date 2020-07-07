@@ -1,0 +1,20 @@
+db:
+  image: db:2.0
+  volumes:
+   - ./fishDB.sql:/docker-entrypoint-initdb.d/fishDB.sql
+  environment:
+   - MYSQL_ROOT_PASSWORD=123456 
+   - MYSQL_DATABASE=fishDB 
+
+#php-apache
+phptest:
+  image: php:test
+  ports:
+   - 8090:80
+  volumes:
+   - ./hsd/rd:/var/www/html
+   - ./hsd/rd/fish-v4:/var/www/html/fish-v4
+  links:
+   - db:aliasdb
+
+

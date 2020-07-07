@@ -1,0 +1,52 @@
+baiyi-nginx:
+  image: nginx:latest
+  ports:
+#     - "5200:80"
+#    - "4002:443"
+  expose: 
+    - "80"
+  volumes:
+    # app
+    - ./baiyi:/usr/share/nginx/html:rw
+    # nginx configs
+    - ./baiyi-lnmp/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    - ./baiyi-lnmp/nginx/conf.d/:/etc/nginx/conf.d/:ro
+    # certificates
+#    - ./nginx/ca/server.crt/:/etc/nginx/server.crt:ro
+#    - ./nginx/ca/server.key/:/etc/nginx/server.key:ro
+  links:
+    - baiyi-fpm:DOCKER_PHP_FPM
+    - baiyi-jbrowse:baiyi-jbrowse
+
+baiyi-fpm:
+  image: php:fpm-baiyi-R-latest
+  volumes:
+    - ./baiyi:/usr/share/nginx/html:rw
+    - ./biosoft:/biosoft:rw
+    # Your php.ini
+    - ./baiyi-lnmp/php-fpm/php.ini-production:/usr/local/etc/php/php.ini:ro
+  # environment:
+    # Set your APP env variables here:
+    # - APP_KEY=
+    # - DB_HOST=
+    # - DB_DATABASE=
+    # - DB_USERNAME=
+    # - DB_PASSWORD=
+  links:
+    - baiyi-mysql:baiyi-mysql
+    - baiyi-jbrowse:baiyi-jbrowse
+
+# database
+baiyi-mysql:
+  image: mysql:5.5
+  volumes:
+    - ./bj_baiyi.sql:/docker-entrypoint-initdb.d/bj_baiyi.sql
+  environment:
+    - MYSQL_ROOT_PASSWORD=baiyi12345
+    - MYSQL_DATABASE=bj_baiyi
+
+# jbrowse
+baiyi-jbrowse:
+  image: jbrowse/gmod-jbrowse:latest
+  volumes:
+    - ./biosoft/jbrowse/jbrowse-data:/jbrowse/jbrowse-data
